@@ -1,0 +1,29 @@
+{
+  "exec": {
+    "steps": [
+      "Connections/eradb",
+      {
+        "name": "_query",
+        "module": "dbupdater",
+        "action": "custom",
+        "output": true,
+        "options": {
+          "connection": "eradb",
+          "sql": {
+            "query": "select sum(energy) as energy, avg(phase1KW) as phase1,\navg(phase2KW) as phase2, avg(phase3KW) as phase3\nfrom GRIDDATA\ngroup by DAY(dateTime)",
+            "params": []
+          }
+        }
+      }
+    ],
+    "catch": {
+      "name": "_error",
+      "module": "core",
+      "action": "setvalue",
+      "output": true,
+      "options": {
+        "value": "{{$_ERROR}}"
+      }
+    }
+  }
+}

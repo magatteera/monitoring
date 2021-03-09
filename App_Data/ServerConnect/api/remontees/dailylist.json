@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      "Connections/eradb",
+      {
+        "name": "query",
+        "module": "dbconnector",
+        "action": "select",
+        "options": {
+          "connection": "eradb",
+          "sql": {
+            "type": "SELECT",
+            "columns": [
+              {
+                "table": "GRIDDATA",
+                "column": "phase1KVAR"
+              },
+              {
+                "table": "GRIDDATA",
+                "column": "phase2KVAR"
+              },
+              {
+                "table": "GRIDDATA",
+                "column": "phase3KVAR"
+              }
+            ],
+            "table": {
+              "name": "GRIDDATA"
+            },
+            "joins": [],
+            "query": "SELECT phase1KVAR, phase2KVAR, phase3KVAR\nFROM GRIDDATA",
+            "params": []
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "name": "phase1KVAR",
+            "type": "number"
+          },
+          {
+            "name": "phase2KVAR",
+            "type": "number"
+          },
+          {
+            "name": "phase3KVAR",
+            "type": "number"
+          }
+        ],
+        "outputType": "array"
+      },
+      {
+        "name": "custom",
+        "module": "dbupdater",
+        "action": "custom",
+        "options": {
+          "connection": "eradb",
+          "sql": {
+            "query": "select sum(energy) as energy, avg(phase1KW) as phase1,\navg(phase2KW) as phase2, avg(phase3KW) as phase3\nfrom GRIDDATA\ngroup by DAY(dateTime)",
+            "params": []
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "name": "energy",
+            "type": "number"
+          },
+          {
+            "name": "phase1",
+            "type": "number"
+          },
+          {
+            "name": "phase2",
+            "type": "number"
+          },
+          {
+            "name": "phase3",
+            "type": "number"
+          }
+        ],
+        "outputType": "array"
+      }
+    ]
+  }
+}
